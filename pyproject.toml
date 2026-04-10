@@ -1,0 +1,29 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "black_ferox"
+version = "0.1.0"
+description = "FEROX — Rust-Accelerated AI Training Framework"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "tqdm>=4.65",
+    "safetensors>=0.4",
+]
+
+[project.optional-dependencies]
+black_dev = [
+    "pytest>=7.0",
+    "tensorboard>=2.14",
+]
+black_wandb = [
+    "wandb>=0.16",
+]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+python-source = "."
+module-name = "black_ferox._black_ferox_core"
+manifest-path = "black_bind/Cargo.toml"

@@ -1,0 +1,25 @@
+[workspace]
+members = [
+    "black_core",
+    "black_train",
+    "black_bind",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.75.0"
+
+[workspace.dependencies]
+black_core = { path = "black_core" }
+black_train = { path = "black_train" }
+thiserror = "1.0"
+parking_lot = "0.12"
+half = { version = "2.4", features = ["num-traits", "serde"] }
+num-traits = "0.2"
+rand = "0.8"
+rand_distr = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+
