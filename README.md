@@ -10,15 +10,15 @@
 
 <br/>
 
-[![FEROX](https://img.shields.io/badge/FEROX-v1.0.0-FFFFFF?style=for-the-badge&logo=pytorch&logoColor=black)](https://github.com/BLACK0X80/ferox)
+[![FEROX](https://img.shields.io/badge/FEROX-v1.0.0-FFFFFF?style=for-the-badge&logo=pytorch&logoColor=black)](https://github.com/BLACK0X80/FEROX)
 [![License](https://img.shields.io/badge/License-MIT-333333?style=for-the-badge&logo=balance-scale&logoColor=white)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Cross--Platform-111111?style=for-the-badge&logo=globe&logoColor=white)](https://github.com/BLACK0X80/ferox)
-[![Language](https://img.shields.io/badge/Language-Rust_%7C_Python-555555?style=for-the-badge&logo=rust&logoColor=white)](https://github.com/BLACK0X80/ferox)
+[![Platform](https://img.shields.io/badge/Platform-Cross--Platform-111111?style=for-the-badge&logo=globe&logoColor=white)](https://github.com/BLACK0X80/FEROX)
+[![Language](https://img.shields.io/badge/Language-Rust_%7C_Python-555555?style=for-the-badge&logo=rust&logoColor=white)](https://github.com/BLACK0X80/FEROX)
 
-[![Build](https://img.shields.io/badge/Build-maturin-000000?style=for-the-badge&logo=python&logoColor=white)](https://github.com/BLACK0X80/ferox)
-[![Tests](https://img.shields.io/badge/Tests-28%2F28_Passed-222222?style=for-the-badge&logo=codecov&logoColor=white)](https://github.com/BLACK0X80/ferox)
-[![Performance](https://img.shields.io/badge/Speed-Native_Rust-444444?style=for-the-badge&logo=speedtest&logoColor=white)](https://github.com/BLACK0X80/ferox)
-[![Zero-Dependency](https://img.shields.io/badge/Backend-Zero_Dependency-111111?style=for-the-badge&logo=molecule&logoColor=white)](https://github.com/BLACK0X80/ferox)
+[![Build](https://img.shields.io/badge/Build-maturin-000000?style=for-the-badge&logo=python&logoColor=white)](https://github.com/BLACK0X80/FEROX)
+[![Tests](https://img.shields.io/badge/Tests-28%2F28_Passed-222222?style=for-the-badge&logo=codecov&logoColor=white)](https://github.com/BLACK0X80/FEROX)
+[![Performance](https://img.shields.io/badge/Speed-Native_Rust-444444?style=for-the-badge&logo=speedtest&logoColor=white)](https://github.com/BLACK0X80/FEROX)
+[![Zero-Dependency](https://img.shields.io/badge/Backend-Zero_Dependency-111111?style=for-the-badge&logo=molecule&logoColor=white)](https://github.com/BLACK0X80/FEROX)
 
 <br/>
 
@@ -90,7 +90,7 @@ Zero Python overhead
 
 Native Rust pointers
 <br/>
-Advanced Bucket Allocs
+Bucket Allocs
 <br/>
 No fragmentation via arenas
 <br/>
@@ -268,7 +268,7 @@ FEROX demands absolute perfection. The framework implements rigorous continuous 
 **Automated Build & Setup**
 
 ```bash
-git clone https://github.com/BLACK0X80/ferox.git
+git clone https://github.com/BLACK0X80/FEROX.git
 cd ferox
 
 pip install maturin
@@ -421,8 +421,8 @@ maturin develop --release
 
 <br/>
 
-[![GitHub Stars](https://img.shields.io/github/stars/BLACK0X80/ferox?style=for-the-badge&color=FFFFFF&logo=github&logoColor=black)](https://github.com/BLACK0X80/ferox/stargazers)
-[![Run Tests](https://img.shields.io/badge/Status-Fully_Operational-000000?style=for-the-badge&logo=rocket&logoColor=white)](https://github.com/BLACK0X80/ferox)
+[![GitHub Stars](https://img.shields.io/github/stars/BLACK0X80/ferox?style=for-the-badge&color=FFFFFF&logo=github&logoColor=black)](https://github.com/BLACK0X80/FEROX/stargazers)
+[![Run Tests](https://img.shields.io/badge/Status-Fully_Operational-000000?style=for-the-badge&logo=rocket&logoColor=white)](https://github.com/BLACK0X80/FEROX)
 
 <br/><br/>
 
