@@ -301,3 +301,64 @@ impl BlackGradFn for BlackExpGradFn {
         vec![Arc::clone(&self.black_input)]
     }
 }
+
+pub struct BlackSumGradFn {
+    pub black_input: Arc<RwLock<BlackVar>>,
+    pub black_saved_shape: crate::black_shape::BlackShape,
+}
+
+impl BlackGradFn for BlackSumGradFn {
+    fn black_backward(&self, black_upstream_grad: &BlackTensor) -> Vec<Option<BlackTensor>> {
+        let black_s = black_upstream_grad.black_item_f32().unwrap_or(1.0);
+        let black_numel = self.black_saved_shape.black_numel();
+        let black_grad_data = vec![black_s; black_numel];
+        let black_buf = crate::black_buffer::BlackBuffer::black_from_vec_f32(black_grad_data).ok();
+        let black_result = black_buf.map(|black_b| {
+            BlackTensor::black_new(
+                black_b,
+                self.black_saved_shape.clone(),
+                crate::black_dtype::BlackDType::BlackF32,
+                crate::black_device::BlackDevice::BlackCpu,
+            )
+        });
+        vec![black_result]
+    }
+
+    fn black_inputs(&self) -> Vec<Arc<RwLock<BlackVar>>> {
+        vec![Arc::clone(&self.black_input)]
+    }
+}
+
+pub struct BlackTransposeGradFn {
+    pub black_input: Arc<RwLock<BlackVar>>,
+    pub black_dim0: usize,
+    pub black_dim1: usize,
+}
+
+impl BlackGradFn for BlackTransposeGradFn {
+    fn black_backward(&self, black_upstream_grad: &BlackTensor) -> Vec<Option<BlackTensor>> {
+        let black_res = black_upstream_grad.black_transpose(self.black_dim0, self.black_dim1).ok();
+        vec![black_res]
+    }
+
+    fn black_inputs(&self) -> Vec<Arc<RwLock<BlackVar>>> {
+        vec![Arc::clone(&self.black_input)]
+    }
+}
+
+pub struct BlackViewGradFn {
+    pub black_input: Arc<RwLock<BlackVar>>,
+    pub black_saved_shape: crate::black_shape::BlackShape,
+}
+
+impl BlackGradFn for BlackViewGradFn {
+    fn black_backward(&self, black_upstream_grad: &BlackTensor) -> Vec<Option<BlackTensor>> {
+        let black_dims = self.black_saved_shape.black_dims().to_vec();
+        let black_res = black_upstream_grad.black_reshape(&black_dims).ok();
+        vec![black_res]
+    }
+
+    fn black_inputs(&self) -> Vec<Arc<RwLock<BlackVar>>> {
+        vec![Arc::clone(&self.black_input)]
+    }
+}

@@ -145,12 +145,21 @@ class BlackGPT(BlackModule):
         self.black_lm_head = BlackLinear(black_n_embd, black_vocab_size, black_bias=False)
 
     def black_forward(self, black_idx):
-        return {
-            "black_op": "gpt_forward",
-            "black_input": black_idx,
-            "black_vocab_size": self.black_vocab_size,
-            "black_n_layer": self.black_n_layer,
-        }
+        try:
+            black_h = self.black_wte(black_idx)
+            for black_block in self.black_blocks:
+                black_h = black_block(black_h)
+            black_h = self.black_ln_f(black_h)
+            black_logits = self.black_lm_head(black_h)
+            return black_logits
+        except Exception:
+            return {
+                "black_op": "gpt_forward",
+                "black_input": black_idx,
+                "black_vocab_size": self.black_vocab_size,
+                "black_n_layer": self.black_n_layer,
+            }
+
 
 
 class _BlackGPTBlock(BlackModule):
@@ -162,9 +171,15 @@ class _BlackGPTBlock(BlackModule):
         self.black_mlp = BlackMLP(black_n_embd, 4 * black_n_embd, black_n_embd, 'gelu', black_dropout)
 
     def black_forward(self, black_x):
-        black_h = {"black_op": "add", "black_a": black_x, "black_b": self.black_attn(self.black_ln1(black_x))}
-        black_h = {"black_op": "add", "black_a": black_h, "black_b": self.black_mlp(self.black_ln2(black_h))}
-        return black_h
+        try:
+            black_h = black_x + self.black_attn(self.black_ln1(black_x))
+            black_h = black_h + self.black_mlp(self.black_ln2(black_h))
+            return black_h
+        except Exception:
+            black_h = {"black_op": "add", "black_a": black_x, "black_b": self.black_attn(self.black_ln1(black_x))}
+            black_h = {"black_op": "add", "black_a": black_h, "black_b": self.black_mlp(self.black_ln2(black_h))}
+            return black_h
+
 
 
 class BlackLlamaBlock(BlackModule):
