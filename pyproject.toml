@@ -4,8 +4,9 @@ build-backend = "maturin"
 
 [project]
 name = "black_ferox"
-version = "0.1.0"
+version = "0.1.2"
 description = "FEROX — Rust-Accelerated AI Training Framework"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.24",

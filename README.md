@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/ferox_logo.png" width="100%" style="border-radius: 12px; margin-bottom: 20px;" alt="FEROX Cover"/>
+<img src="https://raw.githubusercontent.com/BLACK0X80/FEROX/main/assets/ferox_logo.png" width="100%" style="border-radius: 12px; margin-bottom: 20px;" alt="FEROX Cover"/>
 
 <img src="https://capsule-render.vercel.app/api?type=transparent&color=gradient&customColorList=6,11,20&height=120&section=header&text=FEROX&fontSize=100&fontColor=ffffff&fontAlignY=50" width="100%"/>
 

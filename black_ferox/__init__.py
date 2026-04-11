@@ -18,7 +18,7 @@ try:
 except ImportError:
     BLACK_RUST_AVAILABLE = False
 
-__black_version__ = "0.1.0"
+__black_version__ = "0.1.2"
 
 def black_tensor(data, black_dtype=None, black_device=None, black_requires_grad=False):
     import numpy as np
@@ -33,5 +33,5 @@ def black_tensor(data, black_dtype=None, black_device=None, black_requires_grad=
     return BlackVar(t, black_requires_grad)
 
 def black_checkpoint(module, *args, **kwargs):
-    # Dummy gradient checkpointing for tests
+    
     return module(*args, **kwargs)
