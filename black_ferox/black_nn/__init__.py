@@ -55,7 +55,8 @@ class BlackModule:
     def black_train(self, black_mode=True):
         self.black_training = black_mode
         for black_mod in self._black_submodules.values():
-            black_mod.black_train(black_mode)
+            if hasattr(black_mod, 'black_train') and callable(black_mod.black_train):
+                black_mod.black_train(black_mode)
         return self
 
     def black_eval(self):

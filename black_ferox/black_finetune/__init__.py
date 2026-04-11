@@ -2,10 +2,11 @@ import math
 import os
 import json
 import random
+from black_ferox import black_nn
 
 
 
-class BlackLoRALinear:
+class BlackLoRALinear(black_nn.BlackModule):
     def __init__(
         self,
         black_base_layer,
@@ -14,6 +15,7 @@ class BlackLoRALinear:
         black_lora_dropout=0.05,
         black_use_rslora=False,
     ):
+        super().__init__()
         self.black_base = black_base_layer
         self.black_r = black_r
         self.black_alpha = black_lora_alpha
