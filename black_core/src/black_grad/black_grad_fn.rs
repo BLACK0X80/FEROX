@@ -1,4 +1,3 @@
-use crate::black_error::BlackResult;
 use crate::black_grad::black_var::{BlackGradFn, BlackVar};
 use crate::black_ops::black_elementwise;
 use crate::black_ops::black_matmul;

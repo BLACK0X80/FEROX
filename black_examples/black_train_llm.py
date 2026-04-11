@@ -50,6 +50,6 @@ if __name__ == "__main__":
     print(f"Model: {black_model}")
     print(f"Parameters: {black_model.black_num_parameters()}")
     print(f"Optimizer LR: {black_optimizer.black_lr}")
-    print(f"Starting training...")
+    print("Starting training...")
     black_trainer.black_train()
     print("Training complete!")

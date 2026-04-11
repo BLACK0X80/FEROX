@@ -218,12 +218,10 @@ impl BlackBuffer {
 
 impl Drop for BlackBuffer {
     fn drop(&mut self) {
-        if !self.black_ptr.is_null() && self.black_len > 0 {
-            match self.black_device {
-                BlackDevice::BlackCpu => unsafe {
-                    alloc::dealloc(self.black_ptr, self.black_layout);
-                },
-                _ => {}
+        if !self.black_ptr.is_null() && self.black_len > 0
+            && self.black_device == BlackDevice::BlackCpu {
+            unsafe {
+                alloc::dealloc(self.black_ptr, self.black_layout);
             }
         }
     }

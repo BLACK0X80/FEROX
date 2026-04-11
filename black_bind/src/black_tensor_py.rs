@@ -156,7 +156,7 @@ impl BlackTensorPy {
     fn __add__(&self, black_other: &BlackTensorPy) -> PyResult<Self> {
         let black_a = self.black_inner.read();
         let black_b = black_other.black_inner.read();
-        let black_result = black_core::black_ops::black_elementwise::black_add(&*black_a, &*black_b)
+        let black_result = black_core::black_ops::black_elementwise::black_add(&black_a, &black_b)
             .map_err(|black_e| PyValueError::new_err(format!("{}", black_e)))?;
         Ok(BlackTensorPy {
             black_inner: Arc::new(RwLock::new(black_result)),
@@ -166,7 +166,7 @@ impl BlackTensorPy {
     fn __sub__(&self, black_other: &BlackTensorPy) -> PyResult<Self> {
         let black_a = self.black_inner.read();
         let black_b = black_other.black_inner.read();
-        let black_result = black_core::black_ops::black_elementwise::black_sub(&*black_a, &*black_b)
+        let black_result = black_core::black_ops::black_elementwise::black_sub(&black_a, &black_b)
             .map_err(|black_e| PyValueError::new_err(format!("{}", black_e)))?;
         Ok(BlackTensorPy {
             black_inner: Arc::new(RwLock::new(black_result)),
@@ -176,7 +176,7 @@ impl BlackTensorPy {
     fn __mul__(&self, black_other: &BlackTensorPy) -> PyResult<Self> {
         let black_a = self.black_inner.read();
         let black_b = black_other.black_inner.read();
-        let black_result = black_core::black_ops::black_elementwise::black_mul(&*black_a, &*black_b)
+        let black_result = black_core::black_ops::black_elementwise::black_mul(&black_a, &black_b)
             .map_err(|black_e| PyValueError::new_err(format!("{}", black_e)))?;
         Ok(BlackTensorPy {
             black_inner: Arc::new(RwLock::new(black_result)),
@@ -186,7 +186,7 @@ impl BlackTensorPy {
     fn __truediv__(&self, black_other: &BlackTensorPy) -> PyResult<Self> {
         let black_a = self.black_inner.read();
         let black_b = black_other.black_inner.read();
-        let black_result = black_core::black_ops::black_elementwise::black_div(&*black_a, &*black_b)
+        let black_result = black_core::black_ops::black_elementwise::black_div(&black_a, &black_b)
             .map_err(|black_e| PyValueError::new_err(format!("{}", black_e)))?;
         Ok(BlackTensorPy {
             black_inner: Arc::new(RwLock::new(black_result)),
@@ -196,7 +196,7 @@ impl BlackTensorPy {
     fn __matmul__(&self, black_other: &BlackTensorPy) -> PyResult<Self> {
         let black_a = self.black_inner.read();
         let black_b = black_other.black_inner.read();
-        let black_result = black_core::black_ops::black_matmul::black_matmul(&*black_a, &*black_b)
+        let black_result = black_core::black_ops::black_matmul::black_matmul(&black_a, &black_b)
             .map_err(|black_e| PyValueError::new_err(format!("{}", black_e)))?;
         Ok(BlackTensorPy {
             black_inner: Arc::new(RwLock::new(black_result)),
@@ -205,7 +205,7 @@ impl BlackTensorPy {
 
     fn __neg__(&self) -> PyResult<Self> {
         let black_a = self.black_inner.read();
-        let black_result = black_core::black_ops::black_elementwise::black_neg(&*black_a)
+        let black_result = black_core::black_ops::black_elementwise::black_neg(&black_a)
             .map_err(|black_e| PyValueError::new_err(format!("{}", black_e)))?;
         Ok(BlackTensorPy {
             black_inner: Arc::new(RwLock::new(black_result)),

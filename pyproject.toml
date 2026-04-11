@@ -27,3 +27,8 @@ features = ["pyo3/extension-module"]
 python-source = "."
 module-name = "black_ferox._black_ferox_core"
 manifest-path = "black_bind/Cargo.toml"
+
+[tool.pytest.ini_options]
+python_files = ["black_test_*.py"]
+python_classes = ["BlackTest*"]
+python_functions = ["black_test_*"]

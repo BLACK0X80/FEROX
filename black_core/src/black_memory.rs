@@ -74,7 +74,7 @@ impl BlackMemoryPool {
         let mut black_lists = self.black_free_lists.lock();
         black_lists
             .entry(black_bucket)
-            .or_insert_with(Vec::new)
+            .or_default()
             .push((black_ptr, black_layout));
     }
 

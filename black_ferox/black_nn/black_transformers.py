@@ -1,7 +1,7 @@
 from black_ferox.black_nn import (
     BlackModule, BlackLinear, BlackEmbedding, BlackLayerNorm, BlackRMSNorm,
     BlackDropout, BlackMultiheadAttention, BlackGroupedQueryAttention,
-    BlackMLP, BlackSwiGLU, BlackSequential,
+    BlackMLP, BlackSwiGLU,
 )
 
 

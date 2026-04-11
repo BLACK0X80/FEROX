@@ -1,0 +1,8 @@
+﻿cargo :     Checking black_bind v0.1.0 (C:\Users\dell\Desktop\FEROX\black_bind)
+At line:1 char:1
++ cargo clippy --workspace --all-features -- -D warnings 2>&1 | Out-Fil ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (    Checking bl...ROX\black_bind):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.57s

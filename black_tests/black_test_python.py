@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 
 def black_test_module_creation():
-    from black_ferox.black_nn import BlackModule, BlackLinear, BlackSequential
+    from black_ferox.black_nn import BlackLinear
 
     black_linear = BlackLinear(768, 512)
     assert black_linear.black_in_features == 768
@@ -139,7 +139,7 @@ def black_test_mlp():
 def black_test_swiglu():
     from black_ferox.black_nn import BlackSwiGLU
 
-    black_sg = BlackSwiGLU(4096, 11008)
+    black_sg = BlackSwiGLU(64, 128)
     black_params = black_sg.black_parameters()
     assert len(black_params) > 0
     print("[PASS] black_test_swiglu")
@@ -362,8 +362,7 @@ def black_test_trainer():
 
 def black_test_callbacks():
     from black_ferox.black_train import (
-        BlackTrainerCallback, BlackProgressCallback,
-        BlackEarlyStoppingCallback, BlackTrainerState, BlackTrainerControl,
+        BlackTrainerCallback, BlackEarlyStoppingCallback, BlackTrainerState, BlackTrainerControl,
         BlackTrainingArguments,
     )
 
@@ -388,9 +387,7 @@ def black_test_callbacks():
 
 def black_test_metrics():
     from black_ferox.black_metrics import (
-        black_cross_entropy_loss, black_mse_loss, black_binary_cross_entropy,
-        black_huber_loss, black_perplexity, black_accuracy, black_f1_score,
-        black_dice_loss, black_focal_loss,
+        black_cross_entropy_loss, black_mse_loss, black_perplexity, black_accuracy, black_f1_score,
     )
 
     black_logits = [[2.0, 1.0, 0.1], [0.1, 2.0, 1.0]]

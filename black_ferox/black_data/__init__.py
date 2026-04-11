@@ -2,7 +2,7 @@ import random
 import math
 import queue
 import threading
-from multiprocessing import Pool
+
 
 
 class BlackDataset:
@@ -182,3 +182,10 @@ class BlackDataLoader:
         if self.black_drop_last:
             return black_n // self.black_batch_size
         return math.ceil(black_n / self.black_batch_size)
+
+from black_ferox.black_data.black_upgrades import ( # noqa: E402
+    BlackStreamingDataset as BlackStreamingDataset,
+    BlackPackedDataset as BlackPackedDataset,
+    BlackDatasetHub as BlackDatasetHub,
+    BlackSyntheticDataGenerator as BlackSyntheticDataGenerator,
+)

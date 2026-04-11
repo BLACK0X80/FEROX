@@ -29,11 +29,6 @@ impl BlackDevice {
     }
 }
 
-impl Default for BlackDevice {
-    fn default() -> Self {
-        BlackDevice::BlackCpu
-    }
-}
 
 impl std::fmt::Display for BlackDevice {
     fn fmt(&self, black_f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

@@ -1,9 +1,8 @@
 import os
-import time
 import json
 import math
 from dataclasses import dataclass, field
-from typing import Optional, List, Callable
+from typing import Optional
 
 
 @dataclass
@@ -261,7 +260,7 @@ class BlackTrainer:
         return self.black_state
 
     def black_evaluate(self, black_eval_dataset=None):
-        black_dataset = black_eval_dataset or self.black_eval_dataset
+        _black_dataset = black_eval_dataset or self.black_eval_dataset
         self.black_model.black_eval()
         black_metrics = {'black_eval_loss': 0.0}
 

@@ -401,4 +401,4 @@ class BlackSwiGLU(BlackModule):
         return self.black_w2({"black_op": "silu_gate", "black_gate": black_gate, "black_up": black_up})
 
 
-from black_ferox.black_nn import black_transformers
+from black_ferox.black_nn import black_transformers as black_transformers  # noqa: E402

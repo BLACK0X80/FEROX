@@ -108,9 +108,9 @@ pub fn black_max(
         None => {
             let black_n = black_contig.black_numel();
             let mut black_max_val = f32::NEG_INFINITY;
-            for black_i in 0..black_n {
-                if black_data[black_i] > black_max_val {
-                    black_max_val = black_data[black_i];
+            for black_val in black_data.iter().take(black_n) {
+                if *black_val > black_max_val {
+                    black_max_val = *black_val;
                 }
             }
             BlackTensor::black_scalar_f32(black_max_val)
@@ -176,9 +176,9 @@ pub fn black_min(
         None => {
             let black_n = black_contig.black_numel();
             let mut black_min_val = f32::INFINITY;
-            for black_i in 0..black_n {
-                if black_data[black_i] < black_min_val {
-                    black_min_val = black_data[black_i];
+            for black_val in black_data.iter().take(black_n) {
+                if *black_val < black_min_val {
+                    black_min_val = *black_val;
                 }
             }
             BlackTensor::black_scalar_f32(black_min_val)
@@ -346,8 +346,8 @@ pub fn black_var(
             let black_n = black_contig.black_numel();
             let black_m = black_mean_tensor.black_item_f32()?;
             let mut black_acc = 0.0f32;
-            for black_i in 0..black_n {
-                let black_diff = black_data[black_i] - black_m;
+            for black_val in black_data.iter().take(black_n) {
+                let black_diff = *black_val - black_m;
                 black_acc += black_diff * black_diff;
             }
             let black_denom = (black_n - black_correction) as f32;

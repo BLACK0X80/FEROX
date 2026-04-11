@@ -1,5 +1,4 @@
 import time
-import sys
 
 BLACK_SIZES = [256, 512, 1024, 2048, 4096]
 

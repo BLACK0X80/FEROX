@@ -29,7 +29,7 @@ impl BlackTrainLoop {
         black_model_fn: &F,
         black_loss_fn: &L,
         black_optimizer: &mut dyn BlackOptimizer,
-        black_params: &mut Vec<Arc<RwLock<BlackVar>>>,
+        black_params: &mut [Arc<RwLock<BlackVar>>],
         black_inputs: &[BlackTensor],
         black_targets: &[BlackTensor],
     ) -> BlackResult<Vec<f32>>
@@ -124,7 +124,7 @@ impl BlackGradScaler {
     pub fn black_check_and_step(
         &mut self,
         black_optimizer: &mut dyn BlackOptimizer,
-        black_params: &mut Vec<Arc<RwLock<BlackVar>>>,
+        black_params: &mut [Arc<RwLock<BlackVar>>],
     ) -> BlackResult<bool> {
         let black_finite = black_check_finite(black_params)?;
 

@@ -3,7 +3,7 @@ import math
 
 def black_cross_entropy_loss(black_logits, black_targets, black_ignore_index=-100,
                               black_label_smoothing=0.0, black_reduction='mean'):
-    black_batch_size = len(black_logits) if isinstance(black_logits, list) else 1
+
 
     if isinstance(black_logits, list) and len(black_logits) > 0:
         if isinstance(black_logits[0], list):

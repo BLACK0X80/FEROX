@@ -88,8 +88,8 @@ impl BlackTensor {
                 let mut black_buf =
                     BlackBuffer::black_alloc(black_byte_len, BlackDevice::BlackCpu)?;
                 let black_slice = black_buf.black_as_mut_slice();
-                for black_i in 0..black_byte_len {
-                    black_slice[black_i] = 1;
+                for black_val in black_slice.iter_mut().take(black_byte_len) {
+                    *black_val = 1;
                 }
                 Ok(Self::black_new(
                     black_buf,
@@ -242,12 +242,12 @@ impl BlackTensor {
         let black_strides_sl = self.black_strides.black_as_slice();
 
         let mut black_indices = vec![0usize; black_dims.len()];
-        for black_flat in 0..black_numel {
+        for black_dst_val in black_dst.iter_mut().take(black_numel) {
             let mut black_src_offset = self.black_offset;
             for black_d in 0..black_dims.len() {
                 black_src_offset += black_indices[black_d] * black_strides_sl[black_d];
             }
-            black_dst[black_flat] = black_src[black_src_offset];
+            *black_dst_val = black_src[black_src_offset];
 
             let mut black_carry = true;
             for black_d in (0..black_dims.len()).rev() {

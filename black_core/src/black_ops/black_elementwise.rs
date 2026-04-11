@@ -1,8 +1,7 @@
 use crate::black_buffer::BlackBuffer;
 use crate::black_device::BlackDevice;
 use crate::black_dtype::BlackDType;
-use crate::black_error::{BlackError, BlackResult};
-use crate::black_shape::BlackShape;
+use crate::black_error::BlackResult;
 use crate::black_tensor::BlackTensor;
 
 macro_rules! black_binary_op_f32 {

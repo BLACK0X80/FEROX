@@ -6,6 +6,7 @@ use crate::black_error::{BlackError, BlackResult};
 use crate::black_shape::BlackShape;
 use crate::black_tensor::BlackTensor;
 
+#[allow(clippy::too_many_arguments)]
 fn black_im2col(
     black_input: &[f32],
     black_batch: usize,
@@ -145,8 +146,7 @@ pub fn black_conv2d(
         if let Some(black_bias_tensor) = black_bias {
             let black_bias_data = black_bias_tensor.black_buffer.black_as_f32_slice();
             for black_b in 0..black_batch {
-                for black_oc in 0..black_out_channels {
-                    let black_bias_val = black_bias_data[black_oc];
+                for (black_oc, &black_bias_val) in black_bias_data.iter().enumerate().take(black_out_channels) {
                     for black_j in 0..black_oh * black_ow {
                         let black_idx = black_b * black_out_channels * black_oh * black_ow
                             + black_oc * black_oh * black_ow
@@ -221,11 +221,11 @@ pub fn black_conv2d(
         if let Some(black_bias_tensor) = black_bias {
             let black_bias_data = black_bias_tensor.black_buffer.black_as_f32_slice();
             for black_b in 0..black_batch {
-                for black_oc in 0..black_out_channels {
+                for (black_oc, &black_bias_val) in black_bias_data.iter().enumerate().take(black_out_channels) {
                     for black_j in 0..black_oh * black_ow {
                         let black_idx = black_b * black_out_channels * black_oh * black_ow
                             + black_oc * black_oh * black_ow + black_j;
-                        black_out_data[black_idx] += black_bias_data[black_oc];
+                        black_out_data[black_idx] += black_bias_val;
                     }
                 }
             }
@@ -365,11 +365,11 @@ pub fn black_conv3d(
     if let Some(black_bias_tensor) = black_bias {
         let black_bias_data = black_bias_tensor.black_buffer.black_as_f32_slice();
         for black_b in 0..black_batch {
-            for black_oc in 0..black_out_channels {
+            for (black_oc, &black_bias_val) in black_bias_data.iter().enumerate().take(black_out_channels) {
                 for black_j in 0..black_od * black_oh * black_ow {
                     let black_idx = black_b * black_out_channels * black_od * black_oh * black_ow
                         + black_oc * black_od * black_oh * black_ow + black_j;
-                    black_out_data[black_idx] += black_bias_data[black_oc];
+                    black_out_data[black_idx] += black_bias_val;
                 }
             }
         }
@@ -456,11 +456,11 @@ pub fn black_conv_transpose2d(
     if let Some(black_bias_tensor) = black_bias {
         let black_bias_data = black_bias_tensor.black_contiguous()?.black_buffer.black_as_f32_slice().to_vec();
         for black_b in 0..black_batch {
-            for black_oc in 0..black_out_channels {
+            for (black_oc, &black_bias_val) in black_bias_data.iter().enumerate().take(black_out_channels) {
                 for black_j in 0..black_oh * black_ow {
                     let black_idx = black_b * black_out_channels * black_oh * black_ow
                         + black_oc * black_oh * black_ow + black_j;
-                    black_out_data[black_idx] += black_bias_data[black_oc];
+                    black_out_data[black_idx] += black_bias_val;
                 }
             }
         }

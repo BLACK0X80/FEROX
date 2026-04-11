@@ -8,6 +8,7 @@ use crate::black_tensor::BlackTensor;
 
 const BLACK_TILE_SIZE: usize = 64;
 
+#[allow(clippy::too_many_arguments)]
 fn black_matmul_tiled_inner_loop(
     black_a_ptr: *const f32,
     black_b_ptr: *const f32,

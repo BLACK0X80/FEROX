@@ -1,5 +1,4 @@
 import tracemalloc
-import time
 
 BLACK_NUM_STEPS = 100
 
