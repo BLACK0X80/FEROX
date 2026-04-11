@@ -16,7 +16,26 @@ class BlackModule:
         return self.black_forward(*black_args, **black_kwargs)
 
     def black_parameters(self, black_recurse=True):
-        black_params = list(self._black_parameters.values())
+        import black_ferox
+        if hasattr(black_ferox, 'black_var'):
+            if not hasattr(black_ferox.black_var, 'black_numel'):
+                try:
+                    def black_numel(self):
+                        result = 1
+                        for black_dim in getattr(self, 'black_shape', []):
+                            result *= black_dim
+                        return result
+                    black_ferox.black_var.black_numel = black_numel
+                except Exception:
+                    pass
+
+        black_params = []
+        for black_name, black_param in self._black_parameters.items():
+            if type(black_param).__name__ != 'BlackVar':
+                black_param = black_ferox.black_tensor(black_param, black_requires_grad=True)
+                self._black_parameters[black_name] = black_param
+            black_params.append(black_param)
+            
         if black_recurse:
             for black_mod in self._black_submodules.values():
                 black_params.extend(black_mod.black_parameters(black_recurse=True))
