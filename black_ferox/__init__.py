@@ -1,25 +1,21 @@
-from black_ferox import black_nn as black_nn
-from black_ferox import black_optim as black_optim
-from black_ferox import black_data as black_data
-from black_ferox import black_train as black_train
-from black_ferox import black_metrics as black_metrics
-from black_ferox import black_export as black_export
+__version__ = "0.1.2"
 
 try:
-    from black_ferox._black_ferox_core import (  # noqa: F401
-        BlackTensor as BlackTensor,
-        BlackVar as BlackVar,
-        BlackAdamW as _BlackAdamWRust,
-        BlackSGD as _BlackSGDRust,
-        BlackLion as _BlackLionRust,
-        BlackTrainLoop as _BlackTrainLoopRust,
+    from black_ferox._black_ferox_core import (
+        BlackTensorPy as black_tensor,
+        BlackVarPy as black_var,
     )
-    BLACK_RUST_AVAILABLE = True
 except ImportError:
-    BLACK_RUST_AVAILABLE = False
+    pass
 
-__black_version__ = "0.1.2"
+from black_ferox import black_nn
+from black_ferox import black_optim
+from black_ferox import black_data
+from black_ferox import black_train
+from black_ferox import black_metrics
+from black_ferox import black_export
 
+__author__ = "BLACK0X80"
 def black_tensor(data, black_dtype=None, black_device=None, black_requires_grad=False):
     import numpy as np
     from ._black_ferox_core import BlackTensor, BlackVar
