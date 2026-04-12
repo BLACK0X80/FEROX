@@ -302,10 +302,11 @@ class BlackTrainer:
                     if getattr(self, 'black_scheduler', None) is not None:
                         self.black_scheduler.black_step()
 
+                print(f"step {black_step} loss: {black_loss_val:.4f}")
+
                 # STEP 7 - LOGGING
                 if black_step % black_args.black_logging_steps == 0:
                     black_lr = self.black_scheduler.black_get_lr() if getattr(self, 'black_scheduler', None) else 0.0
-                    print(f"step {black_step} | loss: {black_loss_val:.4f} | lr: {black_lr:.2e}")
                     black_logs = {'black_epoch': black_epoch, 'black_step': black_step, 'black_loss': black_loss_val}
                     self.black_log(black_logs)
 
