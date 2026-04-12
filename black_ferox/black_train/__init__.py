@@ -262,8 +262,8 @@ class BlackTrainer:
 
                 # STEP 3 - LOSS
                 black_loss = black_cross_entropy_loss(
-                    black_logits.black_reshape((-1, _black_v_size)),
-                    black_labels.black_reshape((-1,)),
+                    black_logits.black_reshape(-1, _black_v_size),
+                    black_labels.black_reshape(-1),
                     black_ignore_index=-100
                 )
                 

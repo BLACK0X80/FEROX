@@ -242,4 +242,46 @@ impl BlackVarPy {
         let black_var = BlackVar::black_with_grad_fn(black_res, black_grad_fn);
         Ok(BlackVarPy { black_inner: black_var })
     }
+
+    #[pyo3(signature = (*black_dims))]
+    fn black_reshape(&self, black_dims: Vec<i64>) -> PyResult<Self> {
+        let black_a;
+        {
+            let a_r = self.black_inner.read(); black_a = a_r.black_data.clone();
+        }
+        let black_numel = black_a.black_numel();
+        let mut black_inferred_idx: Option<usize> = None;
+        let mut black_known_product: usize = 1;
+        for (black_i, &black_d) in black_dims.iter().enumerate() {
+            if black_d == -1 {
+                if black_inferred_idx.is_some() {
+                    return Err(PyValueError::new_err("only one dimension can be -1"));
+                }
+                black_inferred_idx = Some(black_i);
+            } else if black_d < 0 {
+                return Err(PyValueError::new_err(format!("invalid dimension: {}", black_d)));
+            } else {
+                black_known_product *= black_d as usize;
+            }
+        }
+        let black_resolved: Vec<usize> = if let Some(black_idx) = black_inferred_idx {
+            if black_known_product == 0 {
+                return Err(PyValueError::new_err("cannot infer dimension with zero-size dims"));
+            }
+            let black_inferred = black_numel / black_known_product;
+            black_dims.iter().enumerate().map(|(black_i, &black_d)| {
+                if black_i == black_idx { black_inferred } else { black_d as usize }
+            }).collect()
+        } else {
+            black_dims.iter().map(|&black_d| black_d as usize).collect()
+        };
+        let black_res = black_a.black_reshape(&black_resolved)
+            .map_err(|e| PyValueError::new_err(format!("{}", e)))?;
+        let black_grad_fn = Arc::new(BlackViewGradFn {
+            black_input: Arc::clone(&self.black_inner),
+            black_saved_shape: black_a.black_shape.clone(),
+        });
+        let black_var = BlackVar::black_with_grad_fn(black_res, black_grad_fn);
+        Ok(BlackVarPy { black_inner: black_var })
+    }
 }
