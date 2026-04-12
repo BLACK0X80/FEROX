@@ -243,8 +243,12 @@ impl BlackVarPy {
         Ok(BlackVarPy { black_inner: black_var })
     }
 
-    #[pyo3(signature = (*black_dims))]
-    fn black_reshape(&self, black_dims: Vec<i64>) -> PyResult<Self> {
+    #[pyo3(signature = (black_d0, black_d1=None, black_d2=None, black_d3=None))]
+    fn black_reshape(&self, black_d0: i64, black_d1: Option<i64>, black_d2: Option<i64>, black_d3: Option<i64>) -> PyResult<Self> {
+        let mut black_dims: Vec<i64> = vec![black_d0];
+        if let Some(black_v) = black_d1 { black_dims.push(black_v); }
+        if let Some(black_v) = black_d2 { black_dims.push(black_v); }
+        if let Some(black_v) = black_d3 { black_dims.push(black_v); }
         let black_a;
         {
             let a_r = self.black_inner.read(); black_a = a_r.black_data.clone();
