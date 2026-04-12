@@ -173,20 +173,19 @@ class BlackLayerNorm(BlackModule):
         self.black_eps = black_eps
         self.black_elementwise_affine = black_elementwise_affine
         if black_elementwise_affine:
+            import black_ferox
             black_size = 1
             for black_d in self.black_normalized_shape:
                 black_size *= black_d
-            self._black_parameters['black_weight'] = [1.0] * black_size
-            self._black_parameters['black_bias'] = [0.0] * black_size
+            self._black_parameters['black_weight'] = black_ferox.black_tensor([1.0] * black_size, black_requires_grad=True)
+            self._black_parameters['black_bias'] = black_ferox.black_tensor([0.0] * black_size, black_requires_grad=True)
 
     def black_forward(self, black_x):
-        try:
+        if self.black_elementwise_affine:
             black_w = self._black_parameters['black_weight']
             black_b = self._black_parameters['black_bias']
-            black_res = black_x * black_w + black_b
-            return black_res
-        except Exception:
-            return {"black_op": "layer_norm", "black_input": black_x, "black_eps": self.black_eps}
+            return black_x * black_w + black_b
+        return black_x
 
 
 class BlackRMSNorm(BlackModule):
@@ -249,8 +248,6 @@ class BlackDropout(BlackModule):
         self.black_p = black_p
 
     def black_forward(self, black_x):
-        if self.black_training and self.black_p > 0:
-            return {"black_op": "dropout", "black_input": black_x, "black_p": self.black_p}
         return black_x
 
 
@@ -271,21 +268,18 @@ class BlackMultiheadAttention(BlackModule):
         self.black_out_proj = BlackLinear(black_embed_dim, black_embed_dim, black_bias)
 
     def black_forward(self, black_query, black_key=None, black_value=None, black_mask=None):
-        try:
-            black_k = black_key if black_key is not None else black_query
-            black_v = black_value if black_value is not None else black_query
+        black_k = black_key if black_key is not None else black_query
+        black_v = black_value if black_value is not None else black_query
             
-            black_q_out = self.black_q_proj(black_query)
-            black_k_out = self.black_k_proj(black_k)
-            black_v_out = self.black_v_proj(black_v)
+        black_q_out = self.black_q_proj(black_query)
+        black_k_out = self.black_k_proj(black_k)
+        black_v_out = self.black_v_proj(black_v)
             
-            black_scores = black_q_out @ black_k_out.black_t()
-            black_attn = black_scores.black_gelu()
-            black_out = black_attn @ black_v_out
-            black_res = self.black_out_proj(black_out)
-            return black_res
-        except Exception:
-            return {"black_op": "multihead_attention", "black_query": black_query, "black_key": black_key, "black_value": black_value, "black_mask": black_mask}
+        black_scores = black_q_out @ black_k_out.black_t()
+        black_attn = black_scores.black_gelu()
+        black_out = black_attn @ black_v_out
+        black_res = self.black_out_proj(black_out)
+        return black_res
 
 
 class BlackGroupedQueryAttention(BlackModule):
@@ -430,21 +424,13 @@ class BlackMLP(BlackModule):
         self.black_drop = BlackDropout(black_dropout)
 
     def black_forward(self, black_x):
-        try:
-            black_h = self.black_fc1(black_x)
-            if self.black_act == 'gelu':
-                black_h = black_h.black_gelu()
-            black_h = self.black_drop(black_h)
-            black_h = self.black_fc2(black_h)
-            black_h = self.black_drop(black_h)
-            return black_h
-        except Exception:
-            black_h = self.black_fc1(black_x)
-            black_h = {"black_op": self.black_act, "black_input": black_h}
-            black_h = self.black_drop(black_h)
-            black_h = self.black_fc2(black_h)
-            black_h = self.black_drop(black_h)
-            return black_h
+        black_h = self.black_fc1(black_x)
+        if self.black_act == 'gelu':
+            black_h = black_h.black_gelu()
+        black_h = self.black_drop(black_h)
+        black_h = self.black_fc2(black_h)
+        black_h = self.black_drop(black_h)
+        return black_h
 
 
 class BlackSwiGLU(BlackModule):
