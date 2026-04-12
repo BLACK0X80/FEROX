@@ -124,37 +124,37 @@ class BlackModule:
 class BlackLinear(BlackModule):
     def __init__(self, black_in_features, black_out_features, black_bias=True):
         super().__init__()
+        import black_ferox
         self.black_in_features = black_in_features
         self.black_out_features = black_out_features
         self.black_has_bias = black_bias
         black_k = 1.0 / math.sqrt(black_in_features)
-        self._black_parameters['black_weight'] = [
+        self._black_parameters['black_weight'] = black_ferox.black_tensor([
             [random.uniform(-black_k, black_k) for _ in range(black_in_features)]
             for _ in range(black_out_features)
-        ]
+        ], black_requires_grad=True)
         if black_bias:
-            self._black_parameters['black_bias'] = [random.uniform(-black_k, black_k) for _ in range(black_out_features)]
+            self._black_parameters['black_bias'] = black_ferox.black_tensor([random.uniform(-black_k, black_k) for _ in range(black_out_features)], black_requires_grad=True)
 
     def black_forward(self, black_x):
-        try:
-            black_res = black_x @ self._black_parameters['black_weight'].black_t()
-            if self.black_has_bias:
-                black_res = black_res + self._black_parameters['black_bias']
-            return black_res
-        except Exception:
-            return {"black_op": "linear", "black_input": black_x, "black_weight": self._black_parameters['black_weight'], "black_bias": self._black_parameters.get('black_bias')}
+        black_w = self._black_parameters['black_weight']
+        black_res = black_x @ black_w.black_t()
+        if self.black_has_bias:
+            black_res = black_res + self._black_parameters['black_bias']
+        return black_res
 
 
 class BlackEmbedding(BlackModule):
     def __init__(self, black_num_embeddings, black_embedding_dim, black_padding_idx=None):
         super().__init__()
+        import black_ferox
         self.black_num_embeddings = black_num_embeddings
         self.black_embedding_dim = black_embedding_dim
         self.black_padding_idx = black_padding_idx
-        self._black_parameters['black_weight'] = [
+        self._black_parameters['black_weight'] = black_ferox.black_tensor([
             [random.gauss(0, 1) for _ in range(black_embedding_dim)]
             for _ in range(black_num_embeddings)
-        ]
+        ], black_requires_grad=True)
 
     def black_forward(self, black_indices):
         try:

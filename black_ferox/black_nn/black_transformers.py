@@ -145,20 +145,12 @@ class BlackGPT(BlackModule):
         self.black_lm_head = BlackLinear(black_n_embd, black_vocab_size, black_bias=False)
 
     def black_forward(self, black_idx):
-        try:
-            black_h = self.black_wte(black_idx)
-            for black_block in self.black_blocks:
-                black_h = black_block(black_h)
-            black_h = self.black_ln_f(black_h)
-            black_logits = self.black_lm_head(black_h)
-            return black_logits
-        except Exception:
-            return {
-                "black_op": "gpt_forward",
-                "black_input": black_idx,
-                "black_vocab_size": self.black_vocab_size,
-                "black_n_layer": self.black_n_layer,
-            }
+        black_h = self.black_wte(black_idx)
+        for black_block in self.black_blocks:
+            black_h = black_block(black_h)
+        black_h = self.black_ln_f(black_h)
+        black_logits = self.black_lm_head(black_h)
+        return black_logits
 
 
 

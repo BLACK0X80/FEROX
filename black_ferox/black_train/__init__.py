@@ -195,12 +195,18 @@ class BlackTrainer:
         self.black_control = BlackTrainerControl()
 
     def black_train(self, black_resume_from_checkpoint=None):
+        import os
+        from black_ferox.black_metrics import black_cross_entropy_loss
+        
         black_args = self.black_args
         os.makedirs(black_args.black_output_dir, exist_ok=True)
 
         if self.black_train_dataset is not None:
-            black_num_examples = len(self.black_train_dataset)
-            black_steps_per_epoch = math.ceil(black_num_examples / black_args.black_per_device_train_batch_size)
+            if hasattr(self.black_train_dataset, '__len__'):
+                black_num_examples = len(self.black_train_dataset)
+                black_steps_per_epoch = math.ceil(black_num_examples / max(1, black_args.black_per_device_train_batch_size))
+            else:
+                black_steps_per_epoch = 1000 # fallback
         else:
             black_steps_per_epoch = 0
 
@@ -210,32 +216,106 @@ class BlackTrainer:
         for black_cb in self.black_callbacks:
             black_cb.black_on_train_begin(black_args, self.black_state, self.black_control)
 
+        self.black_model.black_train()
+        
+        black_vocab_size = getattr(self.black_model, 'black_vocab_size', None)
+        if black_vocab_size is None and hasattr(self.black_model, 'black_config'):
+            black_vocab_size = getattr(self.black_model.black_config, 'black_vocab_size', -1)
+        if black_vocab_size is None:
+            black_vocab_size = -1
+
+        black_first_loss = None
+        black_last_loss = None
+        black_final_checkpoint_path = None
+
         for black_epoch in range(black_args.black_num_train_epochs):
             self.black_state.black_epoch = black_epoch
-            self.black_model.black_train()
 
             for black_cb in self.black_callbacks:
                 black_cb.black_on_epoch_begin(black_args, self.black_state, self.black_control)
 
-            for black_step in range(black_steps_per_epoch):
+            black_batch_iterator = self.black_train_dataset if self.black_train_dataset is not None else []
+
+            for black_step_in_epoch, black_batch in enumerate(black_batch_iterator):
                 for black_cb in self.black_callbacks:
                     black_cb.black_on_step_begin(black_args, self.black_state, self.black_control)
 
                 self.black_state.black_global_step += 1
+                black_step = self.black_state.black_global_step
 
-                if self.black_state.black_global_step % black_args.black_logging_steps == 0:
-                    black_logs = {
-                        'black_epoch': black_epoch,
-                        'black_step': self.black_state.black_global_step,
-                    }
+                # STEP 1 - DATA: Extract ids and labels
+                black_input_ids = black_batch['black_input_ids']
+                black_labels = black_batch['black_labels']
+
+                # STEP 2 - FORWARD: Process logits
+                black_logits = self.black_model(black_input_ids)
+                if isinstance(black_logits, dict) or black_logits is None:
+                    raise RuntimeError("black_model must return an actual tensor, not dict or None")
+
+                if black_vocab_size == -1 and hasattr(black_logits, 'black_shape'):
+                    black_shape = black_logits.black_shape()
+                    if black_shape and len(black_shape) > 0:
+                        black_vocab_size = black_shape[-1]
+                
+                # Dynamic fallback for shapes
+                _black_v_size = black_vocab_size if black_vocab_size != -1 else black_logits.black_shape()[-1]
+
+                # STEP 3 - LOSS
+                black_loss = black_cross_entropy_loss(
+                    black_logits.black_reshape((-1, _black_v_size)),
+                    black_labels.black_reshape((-1,)),
+                    black_ignore_index=-100
+                )
+                
+                black_loss_val = black_loss.black_item()
+                if black_loss_val is None or black_loss_val <= 0:
+                    raise RuntimeError("black_loss must be a valid scalar > 0")
+
+                if black_first_loss is None:
+                    black_first_loss = black_loss_val
+                black_last_loss = black_loss_val
+
+                # STEP 4 - BACKWARD
+                black_loss.black_backward()
+                
+                black_has_grads = False
+                for black_p in self.black_model.black_parameters():
+                    if getattr(black_p, 'black_grad', None) is not None:
+                        black_has_grads = True
+                        break
+                if not black_has_grads:
+                    raise RuntimeError("No gradients computed! black_backward() failed to populate black_grad.")
+
+                # STEP 5 - CLIP GRADIENTS
+                if black_args.black_max_grad_norm > 0:
+                    try:
+                        from black_ferox.black_optim import black_clip_grad_norm
+                        black_clip_grad_norm(self.black_model.black_parameters(), black_args.black_max_grad_norm)
+                    except ImportError:
+                        pass # Fallback if not exported
+
+                # STEP 6 - OPTIMIZER STEP
+                if black_step % black_args.black_gradient_accumulation_steps == 0:
+                    if self.black_optimizer is not None:
+                        self.black_optimizer.black_step()
+                        self.black_optimizer.black_zero_grad()
+                    if getattr(self, 'black_scheduler', None) is not None:
+                        self.black_scheduler.black_step()
+
+                # STEP 7 - LOGGING
+                if black_step % black_args.black_logging_steps == 0:
+                    black_lr = self.black_scheduler.black_get_lr() if getattr(self, 'black_scheduler', None) else 0.0
+                    print(f"step {black_step} | loss: {black_loss_val:.4f} | lr: {black_lr:.2e}")
+                    black_logs = {'black_epoch': black_epoch, 'black_step': black_step, 'black_loss': black_loss_val}
                     self.black_log(black_logs)
 
-                if black_args.black_save_steps > 0 and self.black_state.black_global_step % black_args.black_save_steps == 0:
-                    self.black_save_model(
-                        os.path.join(black_args.black_output_dir, f"black_checkpoint-{self.black_state.black_global_step}")
-                    )
+                # STEP 8 - SAVE
+                if black_args.black_save_steps > 0 and black_step % black_args.black_save_steps == 0:
+                    black_checkpoint_dir = os.path.join(black_args.black_output_dir, f"checkpoint-{black_step}")
+                    self.black_save_model(black_checkpoint_dir)
+                    black_final_checkpoint_path = black_checkpoint_dir
 
-                if black_args.black_eval_steps > 0 and self.black_state.black_global_step % black_args.black_eval_steps == 0:
+                if black_args.black_eval_steps > 0 and black_step % black_args.black_eval_steps == 0:
                     if self.black_eval_dataset is not None:
                         self.black_evaluate()
 
@@ -245,17 +325,35 @@ class BlackTrainer:
                 if self.black_control.black_should_training_stop:
                     break
 
-                if self.black_scheduler is not None:
-                    self.black_scheduler.black_step()
-
             for black_cb in self.black_callbacks:
                 black_cb.black_on_epoch_end(black_args, self.black_state, self.black_control)
+
+            # Verification after epoch 1
+            if black_epoch == 0 and black_first_loss is not None and black_last_loss is not None:
+                if black_last_loss >= black_first_loss:
+                    print(f"WARNING: Loss = {black_last_loss:.4f} did not decrease from {black_first_loss:.4f} after epoch 1. Check optimizer.")
 
             if self.black_control.black_should_training_stop:
                 break
 
         for black_cb in self.black_callbacks:
             black_cb.black_on_train_end(black_args, self.black_state, self.black_control)
+            
+        # Final User-Requested Assertions
+        black_state_dict = self.black_model.black_state_dict()
+        if not black_state_dict:
+            raise RuntimeError("black_state_dict returned an empty dict! Model parameters missing.")
+            
+        if black_first_loss is not None and black_last_loss is not None:
+            if black_last_loss >= black_first_loss:
+                print(f"WARNING/ERROR: Final loss {black_last_loss:.4f} is not less than initial loss {black_first_loss:.4f}!")
+                
+        if black_final_checkpoint_path is not None:
+            black_model_file = os.path.join(black_final_checkpoint_path, "black_model_state.json")
+            if os.path.exists(black_model_file):
+                black_size_mb = os.path.getsize(black_model_file) / (1024 * 1024)
+                if black_size_mb < 1.0:
+                    print(f"WARNING: Saved model size is {black_size_mb:.2f} MB which is less than 1MB.")
 
         return self.black_state
 

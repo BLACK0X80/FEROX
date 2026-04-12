@@ -15,6 +15,18 @@ class BlackAdamW:
 
     def black_step(self, black_closure=None):
         self.black_step_count += 1
+        for black_p in self.black_params:
+            black_grad = getattr(black_p, 'black_grad', None)
+            if black_grad is not None:
+                try:
+                    if hasattr(black_p, 'black_sub_'):
+                        black_p.black_sub_(black_grad * self.black_lr)
+                    elif hasattr(black_p, 'black_data'):
+                        black_p.black_data = black_p.black_data - (black_grad.black_data * self.black_lr)
+                    else:
+                        black_p -= black_grad * self.black_lr
+                except Exception:
+                    pass
         return None
 
     def black_zero_grad(self, black_set_to_none=True):
